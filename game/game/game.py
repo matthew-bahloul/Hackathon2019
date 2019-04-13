@@ -20,12 +20,15 @@ pygame.mixer.music.load("bensound-creepy.mp3") #the name of the music file in he
 pygame.mixer.music.set_endevent(pygame.constants.USEREVENT)
 pygame.mixer.music.play()
 
-# boolean to trigger game over scree
+# boolean to trigger game over screen
 #game_over = False;
 
 #-------------Draw Stuff--------------------------------#
 def redrawScreen():
     global walkCount
+
+    background = pygame.transform.scale(pygame.image.load("BG.png"), (swidth, sheight))
+
     screen.blit(background,(0,0)) #place the background  image
 
     if walkCount > 9:
@@ -199,9 +202,8 @@ while not done and display_instructions:
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
 
-    background = pygame.image.load("BG.png")
 
-    screen.blit(background,(0,0)) #place the background  image
+    #screen.blit(background,(0,0)) #place the background  image
  
 # stuf to jump
 isJump = False
