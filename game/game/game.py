@@ -1,4 +1,5 @@
-import pygame;
+import pygame
+import random
 
 pygame.init() # initialize pygame
 pygame.display.set_caption("Pumpkin Boi") # set the title of the window
@@ -37,6 +38,26 @@ def redrawScreen():
         screen.blit(char, (x,y))
 
     pygame.display.update()
+
+#--------------snow stuff-----------------------------------------#
+#falling snow obstacle that'll kill our character
+SnowObstacle = []
+snowColor = (169, 169, 169)
+
+for q in range (5):
+    x = random.randrange(0, 1110)
+    y = random.randrange(0, 590)
+    SnowObstacle.append([x,y])
+
+def snowFall():
+    #snow obstacle
+    for i in SnowObstacle:
+        i[1]+=1
+        pygame.draw.circle(screen, snowColor, i, 60)
+
+        if i[1] > 590:
+            i[1]= random.randrange(-50, -5)
+            i[0] = random.randrange(1110)
 
 #-------------Create Sprites-----------------------------#
 
@@ -204,6 +225,8 @@ while not done:
             isJump = False
             jumpCount = 10
     redrawScreen()
+
+    snowFall()
 
     # display game over screen
     #if game_over:
