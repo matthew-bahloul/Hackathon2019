@@ -16,6 +16,9 @@ pygame.mixer.music.load("bensound-creepy.mp3") #the name of the music file in he
 pygame.mixer.music.set_endevent(pygame.constants.USEREVENT)
 pygame.mixer.music.play()
 
+# boolean to trigger game over scree
+game_over = False;
+
 #--------------Display instruction page------------------#
 
 # This is a font we use to draw text on the screen (size 36)
@@ -47,7 +50,6 @@ while not done and display_instructions:
  
         text = font.render("The big bad boss boy ate your pumpkin seed.", True, (255,255,255))
         screen.blit(text, [10, 40])
- 
     if instruction_page == 2:
         # Draw instructions, page 2
         text = font.render("Intro", True, (255, 255, 255))
@@ -55,7 +57,6 @@ while not done and display_instructions:
  
         text = font.render("He will die for his transgressions.", True, (255, 255, 255))
         screen.blit(text, [10, 40])
-
     if instruction_page == 3:
         # Draw instructions, page 3
         text = font.render("Controls (1)", True, (255, 255, 255))
@@ -63,7 +64,6 @@ while not done and display_instructions:
  
         text = font.render("[left arrow] [right arrow]: move left and right", True, (255, 255, 255))
         screen.blit(text, [10, 40])
-
     if instruction_page == 4:
         # Draw instructions, page 4
         text = font.render("Controls (2)", True, (255, 255, 255))
@@ -71,7 +71,6 @@ while not done and display_instructions:
  
         text = font.render("[space] : jump", True, (255, 255, 255))
         screen.blit(text, [10, 40])
-
     if instruction_page == 5:
         # Draw instructions, page 5
         text = font.render("Controls (3)", True, (255, 255, 255))
@@ -99,6 +98,24 @@ while not done:
 
 
     screen.fill((255,255,255))
+    screen.blit()
+
+    # display game over screen
+    #if game_over:
+    #    # If game over is true, draw game over
+    #    text = font.render("Game Over", True, (255,255,255))
+    #    text_rect = text.get_rect()
+    #    text_x = screen.get_width() / 2 - text_rect.width / 2
+    #    text_y = screen.get_height() / 2 - text_rect.height / 2
+    #    screen.blit(text, [text_x, text_y])
+ 
+    #else:
+    #    # If game isn't over, draw this stuff.
+    #    text = font.render("Click to end game", True, (255,255,255))
+    #    text_rect = text.get_rect()
+    #    text_x = screen.get_width() / 2 - text_rect.width / 2
+    #    text_y = screen.get_height() / 2 - text_rect.height / 2
+    #    screen.blit(text, [text_x, text_y])
 
     pygame.display.flip()
 
