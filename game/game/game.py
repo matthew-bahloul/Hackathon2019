@@ -4,7 +4,10 @@ import random
 pygame.init() # initialize pygame
 pygame.display.set_caption("Pumpkin Boi") # set the title of the window
 
-size = (1500, 900) #set the size of the window
+sheight = 500
+swidth = 1000
+
+size = (swidth, sheight) #set the size of the window
 screen = pygame.display.set_mode(size) # not really sure what this does
 
 done = False # boolean to determine if the game has been exited
@@ -28,15 +31,12 @@ def redrawScreen():
     if walkCount > 9:
         walkCount = 0
 
-    if isJump:
-        screen.blit(jump[walkCount//3], (x,y))
-    elif left:
+    if left:
         screen.blit(runLeft[walkCount//3], (x,y))
         walkCount += 1
     elif right:
         screen.blit(runRight[walkCount//3], (x,y))
         walkCount += 1
-    
     else:
         screen.blit(char, (x,y))
 
@@ -56,7 +56,7 @@ def snowFall():
     #snow obstacle
     for i in SnowObstacle:
         i[1]+=1
-        pygame.draw.circle(screen, snowColor, i, 60)
+        pygame.draw.circle(screen, snowColor, i, swidth//50)
 
         if i[1] > 590:
             i[1]= random.randrange(-50, -5)
