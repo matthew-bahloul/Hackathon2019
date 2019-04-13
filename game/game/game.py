@@ -19,14 +19,65 @@ pygame.mixer.music.play()
 # boolean to trigger game over scree
 #game_over = False;
 
+#-------------Draw Stuff--------------------------------#
+def redrawScreen():
+    global walkCount
+    screen.blit(background,(0,0)) #place the background  image
+
+    if walkCount > 30:
+        walkCount = 0
+
+    if left:
+        screen.blit(runLeft[walkCount//3], (x,y))
+        walkCount += 1
+    elif right:
+        screen.blit(runRight[walkCount//3], (x,y))
+        walkCount += 1
+    else:
+        screen.blit(char, (x,y))
+
+    pygame.display.update()
+
 #-------------Create Sprites-----------------------------#
 
 # main guy
-width = 75
-height = 175
+idle = [pygame.image.load("Idle (1).png"), pygame.image.load("Idle (2).png"),
+        pygame.image.load("Idle (3).png"), pygame.image.load("Idle (4).png"),
+        pygame.image.load("Idle (5).png"), pygame.image.load("Idle (6).png"),
+        pygame.image.load("Idle (7).png"), pygame.image.load("Idle (8).png"),
+        pygame.image.load("Idle (9).png"), pygame.image.load("Idle (10).png"),]
+runRight = [pygame.image.load("Run (1).png"), pygame.image.load("Run (2).png"),
+            pygame.image.load("Run (3).png"), pygame.image.load("Run (4).png"),
+            pygame.image.load("Run (5).png"), pygame.image.load("Run (6).png"),
+            pygame.image.load("Run (7).png"), pygame.image.load("Run (8).png")]
+runLeft = [pygame.image.load("lRun (1).png"), pygame.image.load("lRun (2).png"),
+            pygame.image.load("lRun (3).png"), pygame.image.load("lRun (4).png"),
+            pygame.image.load("lRun (5).png"), pygame.image.load("lRun (6).png"),
+            pygame.image.load("lRun (7).png"), pygame.image.load("lRun (8).png")]
+jump = [pygame.image.load("Jump (1).png"), pygame.image.load("Jump (2).png"),
+        pygame.image.load("Jump (3).png"), pygame.image.load("Jump (4).png"),
+        pygame.image.load("Jump (5).png"), pygame.image.load("Jump (6).png"),
+        pygame.image.load("Jump (7).png"), pygame.image.load("Jump (8).png"),
+        pygame.image.load("Jump (9).png"), pygame.image.load("Jump (10).png")]
+die = [pygame.image.load("Dead (1).png"), pygame.image.load("Dead (2).png"),
+       pygame.image.load("Dead (3).png"), pygame.image.load("Dead (4).png"),
+       pygame.image.load("Dead (5).png"), pygame.image.load("Dead (6).png"),
+       pygame.image.load("Dead (7).png"), pygame.image.load("Dead (8).png"),
+       pygame.image.load("Dead (9).png"), pygame.image.load("Dead (10).png")]
+slide = [pygame.image.load("Slide (1).png"), pygame.image.load("Slide (2).png"), 
+         pygame.image.load("Slide (3).png"), pygame.image.load("Slide (4).png"), 
+         pygame.image.load("Slide (5).png"), pygame.image.load("Slide (6).png")]
+
+char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (75, 200))
+
+width = 10
+height = 10
 x = 0
 y = 725
 vel = 8
+left = False
+right = False
+walkCount = 0
 
 # grunts
 
@@ -101,15 +152,12 @@ while not done and display_instructions:
     background = pygame.image.load("BG.png")
 
     screen.blit(background,(0,0)) #place the background  image
-
-
  
 # stuf to jump
 isJump = False
 jumpCount = 10
 
 #stuff to slide
-isSlide = False
 
 #stuff for direction
 direction = 1
@@ -124,22 +172,27 @@ while not done:
     keys = pygame.key.get_pressed() #get key inputs
 
     # moving and jumping logic
-    if keys[pygame.K_LEFT]:
-        direction = -1
+    if keys[pygame.K_LEFT] and x > 0:
         x -= vel
-    if keys[pygame.K_RIGHT]:
-        direction = 1
+        left = True
+        right = False
+    elif keys[pygame.K_RIGHT]:
         x += vel
-    if keys[pygame.K_DOWN] and not isSlide:
+        left = False
+        right = True
+    if keys[pygame.K_DOWN]:
             x += direction * 2.5 * vel
-            isSlide = False
+    else:
+        right = False
+        left = False
+        walkCount = 0
 
     if not (isJump):
-        if keys[pygame.K_UP]:
-            y -= vel
-        
-        if keys[pygame.K_SPACE]:
+       if keys[pygame.K_SPACE]:
             isJump = True
+            right = False
+            left = False
+            walkCount = 0
     else:
         if jumpCount >= -10:
             neg = 1
@@ -150,13 +203,8 @@ while not done:
         else:
             isJump = False
             jumpCount = 10
+    redrawScreen()
 
-
-
-    pygame.draw.rect(screen, (255,0,0), (x,y,width, height))
-    pygame.display.update()
-
-    screen.blit(background,(0,0)) #place the background  image
     # display game over screen
     #if game_over:
     #    # If game over is true, draw game over
@@ -176,6 +224,6 @@ while not done:
 
     pygame.display.flip()
 
-    clock.tick(60);
+    clock.tick(30);
 
 pygame.quit();
