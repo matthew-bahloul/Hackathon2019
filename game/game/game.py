@@ -25,15 +25,18 @@ def redrawScreen():
     global walkCount
     screen.blit(background,(0,0)) #place the background  image
 
-    if walkCount > 30:
+    if walkCount > 9:
         walkCount = 0
 
-    if left:
+    if isJump:
+        screen.blit(jump[walkCount//3], (x,y))
+    elif left:
         screen.blit(runLeft[walkCount//3], (x,y))
         walkCount += 1
     elif right:
         screen.blit(runRight[walkCount//3], (x,y))
         walkCount += 1
+    
     else:
         screen.blit(char, (x,y))
 
@@ -62,34 +65,60 @@ def snowFall():
 #-------------Create Sprites-----------------------------#
 
 # main guy
-idle = [pygame.image.load("Idle (1).png"), pygame.image.load("Idle (2).png"),
-        pygame.image.load("Idle (3).png"), pygame.image.load("Idle (4).png"),
-        pygame.image.load("Idle (5).png"), pygame.image.load("Idle (6).png"),
-        pygame.image.load("Idle (7).png"), pygame.image.load("Idle (8).png"),
-        pygame.image.load("Idle (9).png"), pygame.image.load("Idle (10).png"),]
-runRight = [pygame.image.load("Run (1).png"), pygame.image.load("Run (2).png"),
-            pygame.image.load("Run (3).png"), pygame.image.load("Run (4).png"),
-            pygame.image.load("Run (5).png"), pygame.image.load("Run (6).png"),
-            pygame.image.load("Run (7).png"), pygame.image.load("Run (8).png")]
-runLeft = [pygame.image.load("lRun (1).png"), pygame.image.load("lRun (2).png"),
-            pygame.image.load("lRun (3).png"), pygame.image.load("lRun (4).png"),
-            pygame.image.load("lRun (5).png"), pygame.image.load("lRun (6).png"),
-            pygame.image.load("lRun (7).png"), pygame.image.load("lRun (8).png")]
-jump = [pygame.image.load("Jump (1).png"), pygame.image.load("Jump (2).png"),
-        pygame.image.load("Jump (3).png"), pygame.image.load("Jump (4).png"),
-        pygame.image.load("Jump (5).png"), pygame.image.load("Jump (6).png"),
-        pygame.image.load("Jump (7).png"), pygame.image.load("Jump (8).png"),
-        pygame.image.load("Jump (9).png"), pygame.image.load("Jump (10).png")]
-die = [pygame.image.load("Dead (1).png"), pygame.image.load("Dead (2).png"),
-       pygame.image.load("Dead (3).png"), pygame.image.load("Dead (4).png"),
-       pygame.image.load("Dead (5).png"), pygame.image.load("Dead (6).png"),
-       pygame.image.load("Dead (7).png"), pygame.image.load("Dead (8).png"),
-       pygame.image.load("Dead (9).png"), pygame.image.load("Dead (10).png")]
-slide = [pygame.image.load("Slide (1).png"), pygame.image.load("Slide (2).png"), 
-         pygame.image.load("Slide (3).png"), pygame.image.load("Slide (4).png"), 
-         pygame.image.load("Slide (5).png"), pygame.image.load("Slide (6).png")]
+idle = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (2).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (3).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (4).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (5).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Idle (6).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (7).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Idle (8).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Idle (9).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Idle (10).png"), (100, 200))]
+runRight = [pygame.transform.scale(pygame.image.load("Run (1).png"), (100, 200)), 
+            pygame.transform.scale(pygame.image.load("Run (2).png"), (100, 200)),
+            pygame.transform.scale(pygame.image.load("Run (3).png"), (100, 200)), 
+            pygame.transform.scale(pygame.image.load("Run (4).png"), (100, 200)),
+            pygame.transform.scale(pygame.image.load("Run (5).png"), (100, 200)), 
+            pygame.transform.scale(pygame.image.load("Run (6).png"), (100, 200)),
+            pygame.transform.scale(pygame.image.load("Run (7).png"), (100, 200)), 
+            pygame.transform.scale(pygame.image.load("Run (8).png"), (100, 200))]
+runLeft = [pygame.transform.scale(pygame.image.load("lRun (1).png"), (100, 200)),
+           pygame.transform.scale(pygame.image.load("lRun (2).png"), (100, 200)),
+           pygame.transform.scale(pygame.image.load("lRun (3).png"), (100, 200)), 
+           pygame.transform.scale(pygame.image.load("lRun (4).png"), (100, 200)),
+           pygame.transform.scale(pygame.image.load("lRun (5).png"), (100, 200)), 
+           pygame.transform.scale(pygame.image.load("lRun (6).png"), (100, 200)),
+           pygame.transform.scale(pygame.image.load("lRun (7).png"), (100, 200)), 
+           pygame.transform.scale(pygame.image.load("lRun (8).png"), (100, 200))]
+jump = [pygame.transform.scale(pygame.image.load("Jump (1).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Jump (2).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Jump (3).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Jump (4).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Jump (5).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Jump (6).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Jump (7).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Jump (8).png"), (100, 200)),
+        pygame.transform.scale(pygame.image.load("Jump (9).png"), (100, 200)), 
+        pygame.transform.scale(pygame.image.load("Jump (10).png"), (100, 200))]
+die = [pygame.transform.scale(pygame.image.load("Dead (1).png"), (100,200)), 
+       pygame.transform.scale(pygame.image.load("Dead (2).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (3).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (4).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (5).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (6).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (7).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (8).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (9).png"), (100,200)),
+       pygame.transform.scale(pygame.image.load("Dead (10).png"), (100,200))]
+slide = [pygame.transform.scale(pygame.image.load("Slide (1).png"), (100,200)), 
+         pygame.transform.scale(pygame.image.load("Slide (2).png"), (100,200)),
+         pygame.transform.scale(pygame.image.load("Slide (3).png"), (100,200)),
+         pygame.transform.scale(pygame.image.load("Slide (4).png"), (100,200)),
+         pygame.transform.scale(pygame.image.load("Slide (5).png"), (100,200)),
+         pygame.transform.scale(pygame.image.load("Slide (6).png"), (100,200))]
 
-char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (75, 200))
+char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 200))
 
 width = 10
 height = 10
@@ -197,12 +226,12 @@ while not done:
         x -= vel
         left = True
         right = False
-    elif keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT]:
         x += vel
         left = False
         right = True
-    if keys[pygame.K_DOWN]:
-            x += direction * 2.5 * vel
+    #if keys[pygame.K_DOWN]:
+    #        x += direction * 2.5 * vel
     else:
         right = False
         left = False
