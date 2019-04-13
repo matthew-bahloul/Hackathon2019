@@ -24,17 +24,23 @@ pygame.mixer.music.play()
 #game_over = False;
 
 #-------------Draw Stuff--------------------------------#
+background = pygame.transform.scale(pygame.image.load("BG.png"), (swidth, sheight))
+
 def redrawScreen():
     global walkCount
-
-    background = pygame.transform.scale(pygame.image.load("BG.png"), (swidth, sheight))
+    global idleCount
 
     screen.blit(background,(0,0)) #place the background  image
 
     if walkCount > 9:
         walkCount = 0
-
-    if left:
+    if idleCount > 9:
+        idleCount = 0;
+       
+    if idle:
+        screen.blit(idling[idleCount//3], (x,y))
+        idleCount += 1
+    elif left:
         screen.blit(runLeft[walkCount//3], (x,y))
         walkCount += 1
     elif right:
@@ -120,17 +126,31 @@ slide = [pygame.transform.scale(pygame.image.load("Slide (1).png"), (100,200)),
          pygame.transform.scale(pygame.image.load("Slide (4).png"), (100,200)),
          pygame.transform.scale(pygame.image.load("Slide (5).png"), (100,200)),
          pygame.transform.scale(pygame.image.load("Slide (6).png"), (100,200))]
+idling = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (2).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (3).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (4).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (5).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (6).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (7).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (8).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (9).png"), (100,200)),
+        pygame.transform.scale(pygame.image.load("Idle (10).png"), (100,200)),]
 
-char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 200))
+#---------------------------character stuff-------------------------------#
+
+char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190))
 
 width = 10
 height = 10
 x = 0
-y = 725
+y = sheight - 190
 vel = 8
 left = False
 right = False
+idle = True
 walkCount = 0
+idleCount = 0
 
 # grunts
 
@@ -143,7 +163,6 @@ font = pygame.font.Font(None, 36)
  
 display_instructions = True
 instruction_page = 1
-
 
 while not done and display_instructions:
     for event in pygame.event.get():
@@ -211,8 +230,6 @@ jumpCount = 10
 
 #stuff to slide
 
-#stuff for direction
-direction = 1
 
 #--------------Main Program Loop---------------#
 while not done:
@@ -228,13 +245,14 @@ while not done:
         x -= vel
         left = True
         right = False
-    if keys[pygame.K_RIGHT]:
+        idle = False
+    elif keys[pygame.K_RIGHT]:
         x += vel
         left = False
         right = True
-    #if keys[pygame.K_DOWN]:
-    #        x += direction * 2.5 * vel
+        idle = False
     else:
+        idle = True
         right = False
         left = False
         walkCount = 0
