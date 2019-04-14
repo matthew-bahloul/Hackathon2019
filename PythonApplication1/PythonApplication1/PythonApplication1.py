@@ -514,7 +514,7 @@ while display_instructions:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             instruction_page += 1
-            if instruction_page == 6:
+            if instruction_page == 5:
                 display_instructions = False
  
     # Set the screen background
@@ -551,13 +551,7 @@ while display_instructions:
  
         text = font.render("[space] : jump", True, (255, 255, 255))
         screen.blit(text, [10, 40])
-    if instruction_page == 5:
-        # Draw instructions, page 5
-        text = font.render("Controls (3)", True, (255, 255, 255))
-        screen.blit(text, [10, 10])
- 
-        text = font.render("[down arrow] : slide", True, (255, 255, 255))
-        screen.blit(text, [10, 40])
+
 
     # Limit to 60 frames per second
  
