@@ -245,6 +245,24 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load("Tile (1).png"), (100, 200))
  
         self.rect = self.image.get_rect()
+
+class Dead_Bodies(pygame.sprite.Sprite):
+
+    def __init__(self,width,height):
+        super().__init__()
+
+        self.image = pygame.Surface([width,height])
+        self.image = pygame.transform.scale(pygame.image.load("Dead (10).png"),(100,100))
+        self.rect = self.image.get_rect()
+
+class Dead_Bodies2(pygame.sprite.Sprite):
+
+    def __init__(self,width,height):
+        super().__init__()
+
+        self.image = pygame.Surface([width,height])
+        self.image = pygame.transform.scale(pygame.image.load("Slide (10).png"),(100,100))
+        self.rect = self.image.get_rect()
  
 class Level():
     """ This is a generic super-class used to define a level.
@@ -256,6 +274,8 @@ class Level():
             platforms collide with the player. """
         self.platform_list = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
+        self.bodies_list = pygame.sprite.Group()
+        self.bods_list2 = pygame.sprite.Group()
         self.player = player
  
         # How far this world has been scrolled left/right
@@ -271,6 +291,8 @@ class Level():
         """ Update everything in this level."""
         self.platform_list.update()
         self.enemy_list.update()
+        self.bodies_list.update()
+        self.bods_list2.update()
  
     def draw(self, screen, X2, curr_background = background): #---------------------------------------------------------------------------------------------------------------------------------------------------
         """ Draw everything on this level. """
@@ -283,7 +305,9 @@ class Level():
  
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)
-        self.enemy_list.draw(screen)                 
+        self.enemy_list.draw(screen)
+        self.bodies_list.draw(screen)
+        self.bods_list2.draw(screen)
 
     def shift_world(self, shift_x):
         """ When the user moves left/right and we need to scroll
@@ -298,6 +322,10 @@ class Level():
  
         for enemy in self.enemy_list:
             enemy.rect.x += shift_x
+
+        for bodies in self.bodies_list:
+            bodies.rect.x += shift_x
+
  # Create platforms for the level
 class Level_01(Level):
     """ Definition for level 1. """
@@ -316,11 +344,18 @@ class Level_01(Level):
         self.load_music(song)
  
         # Array with width, height, x, and y of platform
-        level = [[210, 70, 500, 500],
+        level = [[1000, 70, 500, 500],
                  [210, 70, 800, 400],
                  [210, 70, 1000, 500],
                  [210, 70, 1120, 280],
                  ]
+
+        #array of dead bodies
+        arr_bods = [[100,100,200,450],
+                    [100,100, 300, 450],
+                    [100,100, 100, 450],
+                    [100, 100,400, 450]
+                    ]
  
         # Go through the array above and add platforms
         for platform in level:
@@ -329,6 +364,12 @@ class Level_01(Level):
             block.rect.y = platform[3]
             block.player = self.player
             self.platform_list.add(block)
+
+        for b in arr_bods:
+            ent = Dead_Bodies(b[0], b[1])
+            ent.rect.x = b[2]
+            ent.rect.y = b[3]
+            self.bodies_list.add(ent)
 
 
  # Create platforms for the level
@@ -356,6 +397,24 @@ class Level_02(Level):
             block.rect.y = platform[3]
             block.player = self.player
             self.platform_list.add(block)
+
+                # Array with type of platform, and x, y location of the platform.
+        bods_list2 =  [[100,100,200,450],
+                    [100,100, 300, 450],
+                    [100,100, 100, 450],
+                    [100, 100,400, 450]
+                    ]
+
+        for b in bods_list2:
+            ent = Dead_Bodies2(b[0], b[1])
+            ent.rect.x = b[2]
+            ent.rect.y = b[3]
+            self.bodies_list.add(ent)
+
+
+
+
+
  
 # Create platforms for the level
 class Level_03(Level):
@@ -441,7 +500,71 @@ class Level_05(Level):
             block.rect.y = platform[3]
             block.player = self.player
             self.platform_list.add(block)  
+#--------------Display instruction page------------------#
 
+# This is a font we use to draw text on the screen (size 36)
+font = pygame.font.Font(None, 36)
+ 
+display_instructions = True
+instruction_page = 1
+
+while display_instructions:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            instruction_page += 1
+            if instruction_page == 6:
+                display_instructions = False
+ 
+    # Set the screen background
+    screen.fill((0,0,0))
+ 
+    if instruction_page == 1:
+        # Draw instructions, page 1
+        # This could also load an image created in another program.
+        # That could be both easier and more flexible.
+ 
+        text = font.render("Intro", True, (255,255,255))
+        screen.blit(text, [10, 10])
+ 
+        text = font.render("The big bad boss boy ate your pumpkin seed.", True, (255,255,255))
+        screen.blit(text, [10, 40])
+    if instruction_page == 2:
+        # Draw instructions, page 2
+        text = font.render("Intro", True, (255, 255, 255))
+        screen.blit(text, [10, 10])
+ 
+        text = font.render("He must die for his transgressions.", True, (255, 255, 255))
+        screen.blit(text, [10, 40])
+    if instruction_page == 3:
+        # Draw instructions, page 3
+        text = font.render("Controls (1)", True, (255, 255, 255))
+        screen.blit(text, [10, 10])
+ 
+        text = font.render("[left arrow] [right arrow]: move left and right", True, (255, 255, 255))
+        screen.blit(text, [10, 40])
+    if instruction_page == 4:
+        # Draw instructions, page 4
+        text = font.render("Controls (2)", True, (255, 255, 255))
+        screen.blit(text, [10, 10])
+ 
+        text = font.render("[space] : jump", True, (255, 255, 255))
+        screen.blit(text, [10, 40])
+    if instruction_page == 5:
+        # Draw instructions, page 5
+        text = font.render("Controls (3)", True, (255, 255, 255))
+        screen.blit(text, [10, 10])
+ 
+        text = font.render("[down arrow] : slide", True, (255, 255, 255))
+        screen.blit(text, [10, 40])
+
+    # Limit to 60 frames per second
+ 
+    # Go ahead and update the screen with what we've drawn.
+    pygame.display.flip()
+
+    DislpayInstructions = False
 def main():
     pygame.display.set_caption("Side-scrolling Platformer")
 
