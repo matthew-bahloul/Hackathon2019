@@ -17,16 +17,22 @@ screen = pygame.display.set_mode((sWidth, sHeight))
 pygame.display.set_caption("Our Game")
 
 #walking Pumpkin Boi character list
-walkRight = [pygame.image.load('RWalk1.png'), pygame.image.load('RWalk2.png'),
-             pygame.image.load('RWalk3.png'), pygame.image.load('RWalk4.png'),
-             pygame.image.load('RWalk5.png'), pygame.image.load('RWalk6.png'),
-             pygame.image.load('RWalk7.png'), pygame.image.load('RWalk8.png'),
-             pygame.image.load('RWalk9.png'), pygame.image.load('RWalk10.png')]
-walkLeft = [pygame.image.load('LWalk1.png'), pygame.image.load('LWalk2.png'),
-             pygame.image.load('LWalk3.png'), pygame.image.load('LWalk4.png'),
-             pygame.image.load('LWalk5.png'), pygame.image.load('LWalk6.png'),
-             pygame.image.load('LWalk7.png'), pygame.image.load('LWalk8.png'),
-             pygame.image.load('LWalk9.png'), pygame.image.load('LWalk10.png')]
+walkRight = [pygame.transform.scale(pygame.image.load('Run (1).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('Run (2).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('Run (3).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('Run (4).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('Run (5).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('Run (6).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('Run (7).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('Run (8).png'),(50,100))]
+walkLeft = [pygame.transform.scale(pygame.image.load('lRun (1).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (2).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (3).png'), (50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (4).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (5).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (6).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (7).png'),(50,100)),
+             pygame.transform.scale(pygame.image.load('lRun (8).png'),(50,100))]
 background = pygame.image.load('BG.png')
 character = pygame.image.load('Idle (1).png')
 
@@ -54,7 +60,7 @@ class player():
 
     def draw(self, screen):
 #10 images, same image for 3 frames. Use upper bound of 30 (30/3 = 10 images)
-        if self.walkCount + 1 >= 30:
+        if self.walkCount + 1 >= 24:
             self.walkCount = 0
 
         if not(self.standing):
@@ -90,12 +96,12 @@ class projectile():
 
 class enemy():
 #walking Enemy character
-    walkRight = [pygame.image.load('idle_R000.png'), pygame.image.load('idle_R001.png'),
-                 pygame.image.load('idle_R002.png'), pygame.image.load('idle_R003.png'),
-                 pygame.image.load('idle_R004.png'), pygame.image.load('idle_R005.png')]
-    walkLeft = [pygame.image.load('idle_L000.png'), pygame.image.load('idle_L001.png'),
-                 pygame.image.load('idle_L002.png'), pygame.image.load('idle_L003.png'),
-                 pygame.image.load('idle_L004.png'), pygame.image.load('idle_L005.png')]
+    walkRight = [pygame.image.load('run_000.png'), pygame.image.load('run_001.png'),
+                 pygame.image.load('run_002.png'), pygame.image.load('run_003.png'),
+                 pygame.image.load('run_004.png'), pygame.image.load('run_005.png')]
+    walkLeft = [pygame.image.load('lrun_000.png'), pygame.image.load('lrun_001.png'),
+                 pygame.image.load('lrun_002.png'), pygame.image.load('lrun_003.png'),
+                 pygame.image.load('lrun_004.png'), pygame.image.load('lrun_005.png')]
 
     def __init__(self, x, y, width, height, end): #initialize enemy
         self.x = x
@@ -130,18 +136,18 @@ class enemy():
 
     def move(self):
         if self.vel > 0: #if moving right
-            if self.x < self.path[1] + self.vel: #if haven't reached the furthest right on our path
+            if self.x + self.vel  < self.path[1]: #if haven't reached the furthest right on our path
                 self.x += self.vel
             else: #change direction and move back the other way
                 self.vel = self.vel * -1
-                self.x += self.vel
+                #self.x += self.vel
                 self.walkCount = 0
         else: #if moving left
             if self.x > self.path[0] - self.vel: #if haven't reached furthest left point
                 self.x += self.vel
             else: #change direction
                 self.vel = self.vel * -1
-                self.x += self.vel
+                #self.x += self.vel
                 self.walkCount = 0  
 
     def hit(self):
@@ -149,7 +155,6 @@ class enemy():
             self.health -= 1
         else:
             self.visible = False
-        print('hit')
 
 #=====================================================================================
 
@@ -167,7 +172,7 @@ def redrawGameWindow():
 
 font = pygame.font.SysFont('comicsans', 30, True)
 pBoi = player(100, 410, 64, 84) #position of character and pixel size
-ghost = enemy(800, 410, 80, 82, (sWidth//1.2)) #x,y, pixel, pixel, end x-coord
+ghost = enemy(500, 410, 80, 82, (sWidth//1.2)) #x,y, pixel, pixel, end x-coord
 shootLoop = 0
 bullets = [] #a list that will store all of the bullet objects
 
@@ -206,9 +211,10 @@ while run:
         else:
             facing = 1
 
-        if len(bullets) < 5: #makes sure we can't exceed 5 bullets on screen at once
+        if len(bullets) < 10: #makes sure we can't exceed 5 bullets on screen at once
             bullets.append(projectile(round(pBoi.x + pBoi.width//2), #creates a bullet starting at the middle of the character
                 round(pBoi.y + pBoi.height//2), 6, RED, facing))     #look of bullet
+
             shootLoop = 1
             
     if keys[pygame.K_LEFT] and pBoi.x > pBoi.vel: #x > vel makes character not move off screen
