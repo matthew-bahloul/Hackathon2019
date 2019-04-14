@@ -24,14 +24,33 @@ pygame.mixer.music.play()
 #game_over = False;
 
 #-------------Draw Stuff--------------------------------#
-background = pygame.transform.scale(pygame.image.load("BG.png"), (swidth, sheight))
+background = pygame.transform.scale(pygame.image.load("3_game_background.png"), (swidth, sheight))
+
+backgroundX = 0
+backgroundX2 = background.get_width()
+
 
 def redrawScreen():
+
+    global backgroundX
+    global backgroundX2
     global walkCount
     global idleCount
 
-    screen.blit(background,(0,0)) #place the background  image
+    if not idle and right:    
+        backgroundX  -= .05*vel
+        backgroundX2 -= .05*vel
 
+    if backgroundX < background.get_width() * -1:
+     backgroundX = background.get_width()
+
+    if backgroundX2 < background.get_width()*-1:
+     backgroundX2 = background.get_width()
+
+    screen.blit(background,(backgroundX,0)) #place the background  image
+    screen.blit(background,(backgroundX2,0)) #place the background  image
+
+    # main character
     if walkCount > 9:
         walkCount = 0
     if idleCount > 9:
@@ -48,6 +67,19 @@ def redrawScreen():
         walkCount += 1
     else:
         screen.blit(char, (x,y))
+
+    # boss
+    if boss_idle:
+        screen.blit(bossIdle[idleCount//3], (boss_x, boss_y))
+        idleCount += 1
+    elif boss_left:
+        screen.blit(bossRunLeft[walkCount//3], (boss_x, boss_y))
+        walkCount += 1
+    elif boss_right:
+        screen.blit(bossRunRight[walkCount//3], (boss_x, boss_y))
+        walkCount += 1
+    else:
+        screen.blit(boss, (x,y))
 
     pygame.display.update()
 
@@ -84,6 +116,24 @@ idle = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 200)),
         pygame.transform.scale(pygame.image.load("Idle (8).png"), (100, 200)),
         pygame.transform.scale(pygame.image.load("Idle (9).png"), (100, 200)), 
         pygame.transform.scale(pygame.image.load("Idle (10).png"), (100, 200))]
+
+
+#---------------------------character stuff-------------------------------#
+
+# main character
+char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190))
+
+x = 0
+y = sheight - 190
+vel = 8
+left = False
+right = False
+idle = True
+isJump = False
+jumpCount = 10
+walkCount = 0
+idleCount = 0
+
 runRight = [pygame.transform.scale(pygame.image.load("Run (1).png"), (100, 200)), 
             pygame.transform.scale(pygame.image.load("Run (2).png"), (100, 200)),
             pygame.transform.scale(pygame.image.load("Run (3).png"), (100, 200)), 
@@ -137,24 +187,41 @@ idling = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100,200)),
         pygame.transform.scale(pygame.image.load("Idle (9).png"), (100,200)),
         pygame.transform.scale(pygame.image.load("Idle (10).png"), (100,200)),]
 
-#---------------------------character stuff-------------------------------#
-
-char = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190))
-
-width = 10
-height = 10
-x = 0
-y = sheight - 190
-vel = 8
-left = False
-right = False
-idle = True
-walkCount = 0
-idleCount = 0
-
 # grunts
 
 # final boss
+boss_x = 0
+boss_y = 0
+boss_walk_count = 0
+boss_idle_count = 0
+boss_left = False
+boss_right = False
+boss_idle = True
+boss = pygame.transform.scale(pygame.image.load("monsteridle_000.png"), (300,300))
+
+bossIdle = [pygame.transform.scale(pygame.image.load("monsteridle_000.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsteridle_002.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsteridle_003.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsteridle_004.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsteridle_005.png"), (300,300))]
+bossRunLeft = []
+bossRunRight = [pygame.transform.scale(pygame.image.load("monsterrun_000.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsterrun_001.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsterrun_002.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsterrun_003.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsterrun_004.png"), (300,300)),
+                pygame.transform.scale(pygame.image.load("monsterrun_005.png"), (300,300)),]
+bossJump = [pygame.transform.scale(pygame.image.load("monsterjump_001.png"), (300,300)),
+            pygame.transform.scale(pygame.image.load("monsterjump_002.png"), (300,300)),
+            pygame.transform.scale(pygame.image.load("monsteridle_003.png"), (300,300)),
+            pygame.transform.scale(pygame.image.load("monsterjump_004.png"), (300,300)),
+            pygame.transform.scale(pygame.image.load("monsterjump_005.png"), (300,300))]
+bossDie = [pygame.transform.scale(pygame.image.load("monsterDeath_000.png"), (300,300)),
+           pygame.transform.scale(pygame.image.load("monsterDeath_001.png"), (300,300)),
+           pygame.transform.scale(pygame.image.load("monsterDeath_002.png"), (300,300)),
+           pygame.transform.scale(pygame.image.load("monsterDeath_003.png"), (300,300)),
+           pygame.transform.scale(pygame.image.load("monsterDeath_004.png"), (300,300)),
+           pygame.transform.scale(pygame.image.load("monsterDeath_005.png"), (300,300)),]
 
 #--------------Display instruction page------------------#
 
@@ -225,8 +292,7 @@ while not done and display_instructions:
     #screen.blit(background,(0,0)) #place the background  image
  
 # stuf to jump
-isJump = False
-jumpCount = 10
+
 
 #stuff to slide
 
@@ -246,7 +312,7 @@ while not done:
         left = True
         right = False
         idle = False
-    elif keys[pygame.K_RIGHT]:
+    elif keys[pygame.K_RIGHT] and x <= .75 * swidth:
         x += vel
         left = False
         right = True
@@ -273,6 +339,7 @@ while not done:
         else:
             isJump = False
             jumpCount = 10
+
     redrawScreen()
 
     snowFall()
