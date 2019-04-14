@@ -1,11 +1,29 @@
 import pygame
+
+""" Main Program """
+pygame.init()
+
+# Screen dimensions
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+ 
+# Set the height and width of the screen
+size = [SCREEN_WIDTH, SCREEN_HEIGHT]
+screen = pygame.display.set_mode(size)
  
 # Global constants
 global idleCount
 global walkCount
+global right 
+global left
+global idle 
+global jump
 
-walkCount = 0
-idleCount = 0
+global X2
+global background
+X2 = 0
+
+background = pygame.transform.scale(pygame.image.load("3_game_background.png"), (SCREEN_WIDTH*6, SCREEN_HEIGHT))
 
 # Colors
 BLACK = (0, 0, 0)
@@ -13,11 +31,6 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
- 
-# Screen dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
- 
  
 class Player(pygame.sprite.Sprite):
     """
@@ -27,28 +40,26 @@ class Player(pygame.sprite.Sprite):
     # -- Methods
     def __init__(self):
         """ Constructor function """
- 
         # Call the parent's constructor
         super().__init__()
- 
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        width = 40
-        height = 60
-        self.image = pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190))
- 
-        # Set a referance to the image rect.
-        self.rect = self.image.get_rect()
- 
-        # Set speed vector of player
-        self.change_x = 0
-        self.change_y = 0
- 
-        # List of sprites we can bump against
-        self.level = None
 
-        #all animation frames
-        runRight = [pygame.transform.scale(pygame.image.load("Run (1).png"), (100, 200)), 
+        self.right = False
+        self.left = False
+        self.idle = True
+        self.jump = False
+ 
+        # This could also be an image loaded from the disk.
+        self.idling = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (1).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (2).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (3).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (4).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (5).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (6).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (7).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (8).png"), (100, 190)),
+            pygame.transform.scale(pygame.image.load("Idle (9).png"), (100, 190))]
+        self.runRight = [pygame.transform.scale(pygame.image.load("Run (1).png"), (100, 200)), 
             pygame.transform.scale(pygame.image.load("Run (2).png"), (100, 200)),
             pygame.transform.scale(pygame.image.load("Run (3).png"), (100, 200)), 
             pygame.transform.scale(pygame.image.load("Run (4).png"), (100, 200)),
@@ -56,15 +67,15 @@ class Player(pygame.sprite.Sprite):
             pygame.transform.scale(pygame.image.load("Run (6).png"), (100, 200)),
             pygame.transform.scale(pygame.image.load("Run (7).png"), (100, 200)), 
             pygame.transform.scale(pygame.image.load("Run (8).png"), (100, 200))]
-        runLeft = [pygame.transform.scale(pygame.image.load("lRun (1).png"), (100, 200)),
-           pygame.transform.scale(pygame.image.load("lRun (2).png"), (100, 200)),
-           pygame.transform.scale(pygame.image.load("lRun (3).png"), (100, 200)), 
-           pygame.transform.scale(pygame.image.load("lRun (4).png"), (100, 200)),
-           pygame.transform.scale(pygame.image.load("lRun (5).png"), (100, 200)), 
-           pygame.transform.scale(pygame.image.load("lRun (6).png"), (100, 200)),
-           pygame.transform.scale(pygame.image.load("lRun (7).png"), (100, 200)), 
-           pygame.transform.scale(pygame.image.load("lRun (8).png"), (100, 200))]
-        jump = [pygame.transform.scale(pygame.image.load("Jump (1).png"), (100, 200)), 
+        self.runLeft = [pygame.transform.scale(pygame.image.load("lRun (1).png"), (100, 200)),
+                        pygame.transform.scale(pygame.image.load("lRun (2).png"), (100, 200)),
+                        pygame.transform.scale(pygame.image.load("lRun (3).png"), (100, 200)), 
+                        pygame.transform.scale(pygame.image.load("lRun (4).png"), (100, 200)),
+                        pygame.transform.scale(pygame.image.load("lRun (5).png"), (100, 200)), 
+                        pygame.transform.scale(pygame.image.load("lRun (6).png"), (100, 200)),
+                        pygame.transform.scale(pygame.image.load("lRun (7).png"), (100, 200)), 
+                        pygame.transform.scale(pygame.image.load("lRun (8).png"), (100, 200))]
+        self.jumpy = [pygame.transform.scale(pygame.image.load("Jump (1).png"), (100, 200)), 
            pygame.transform.scale(pygame.image.load("Jump (2).png"), (100, 200)),
            pygame.transform.scale(pygame.image.load("Jump (3).png"), (100, 200)), 
            pygame.transform.scale(pygame.image.load("Jump (4).png"), (100, 200)),
@@ -74,7 +85,7 @@ class Player(pygame.sprite.Sprite):
            pygame.transform.scale(pygame.image.load("Jump (8).png"), (100, 200)),
            pygame.transform.scale(pygame.image.load("Jump (9).png"), (100, 200)), 
            pygame.transform.scale(pygame.image.load("Jump (10).png"), (100, 200))]
-        die = [pygame.transform.scale(pygame.image.load("Dead (1).png"), (100,200)), 
+        self.die = [pygame.transform.scale(pygame.image.load("Dead (1).png"), (100,200)), 
            pygame.transform.scale(pygame.image.load("Dead (2).png"), (100,200)),
            pygame.transform.scale(pygame.image.load("Dead (3).png"), (100,200)),
            pygame.transform.scale(pygame.image.load("Dead (4).png"), (100,200)),
@@ -84,25 +95,47 @@ class Player(pygame.sprite.Sprite):
            pygame.transform.scale(pygame.image.load("Dead (8).png"), (100,200)),
            pygame.transform.scale(pygame.image.load("Dead (9).png"), (100,200)),
            pygame.transform.scale(pygame.image.load("Dead (10).png"), (100,200))]
-        slide = [pygame.transform.scale(pygame.image.load("Slide (1).png"), (100,200)), 
+        self.slide = [pygame.transform.scale(pygame.image.load("Slide (1).png"), (100,200)), 
              pygame.transform.scale(pygame.image.load("Slide (2).png"), (100,200)),
              pygame.transform.scale(pygame.image.load("Slide (3).png"), (100,200)),
              pygame.transform.scale(pygame.image.load("Slide (4).png"), (100,200)),
              pygame.transform.scale(pygame.image.load("Slide (5).png"), (100,200)),
              pygame.transform.scale(pygame.image.load("Slide (6).png"), (100,200))]
-        idling = [pygame.transform.scale(pygame.image.load("Idle (1).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (2).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (3).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (4).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (5).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (6).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (7).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (8).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (9).png"), (100,200)),
-            pygame.transform.scale(pygame.image.load("Idle (10).png"), (100,200))]
+        
+        self.index = 0
+        self.image = self.idling[self.index]
+
+        # Set a referance to the image rect.
+        self.rect = self.image.get_rect()
  
+        # Set speed vector of player
+        self.change_x = 0
+        self.change_y = 0
+ 
+        # List of sprites we can bump against
+        self.level = None
+      
     def update(self):
         """ Move the player. """
+        self.index += 1
+        
+        if self.right:
+            if self.index >= len(self.runRight):
+                self.index = 0
+            self.image = self.runRight[self.index]
+        elif self.left:
+            if self.index > len(self.runLeft):
+                self.index = 0
+            self.image = self.runLeft[self.index]
+        elif self.jump:
+            if self.index >= len(self.jumpy):
+                self.index = 0
+            self.image = self.jumpy[self.index]
+        else:
+            if self.index >= len(self.idling):
+                self.index = 0
+            self.image = self.idling[self.index]
+
         # Gravity
         self.calc_grav()
  
@@ -148,32 +181,49 @@ class Player(pygame.sprite.Sprite):
             self.change_y = 0
             self.rect.y = SCREEN_HEIGHT - self.rect.height
  
-    def jump(self):
+    def doJump(self):
         """ Called when user hits 'jump' button. """
  
         # move down a bit and see if there is a platform below us.
         # Move down 2 pixels because it doesn't work well if we only move down 1
         # when working with a platform moving down.
+        # Sound Effect when jumping, in jump definition of player class
+        jump_sound = pygame.mixer.Sound("Jump_Sound.wav")
+        pygame.mixer.Sound.play(jump_sound)
+
         self.rect.y += 2
         platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
         self.rect.y -= 2
  
         # If it is ok to jump, set our speed upwards
         if len(platform_hit_list) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
-            self.change_y = -10
+            self.change_y = -12
  
-    # Player-controlled movement:
-    def go_left(self):
+    # Player-controlled movement:--------------------------------------------------------------------------------------------------------------------------------
+    def go_left(self, X2):
         """ Called when the user hits the left arrow. """
-        
+        self.left = True
+        self.right = False
+        self.jump = False
+        self.idle = False
         self.change_x = -6
- 
-    def go_right(self):
+        X2 -=12
+
+    def go_right(self, X2):
         """ Called when the user hits the right arrow. """
+        self.left = False
+        self.right = True
+        self.jump = False
+        self.idle = False
         self.change_x = 6
+        X2 +=12
  
     def stop(self):
         """ Called when the user lets off the keyboard. """
+        self.left = False
+        self.right = False
+        self.jump = False
+        self.idle = True
         self.change_x = 0
  
  
@@ -185,12 +235,10 @@ class Platform(pygame.sprite.Sprite):
             an array of 5 numbers like what's defined at the top of this code.
             """
         super().__init__()
- 
-        self.image = pygame.Surface([width, height])
-        self.image.fill(GREEN)
+
+        self.image = pygame.transform.scale(pygame.image.load("Tile (1).png"), (100, 200))
  
         self.rect = self.image.get_rect()
- 
  
 class Level():
     """ This is a generic super-class used to define a level.
@@ -206,6 +254,11 @@ class Level():
  
         # How far this world has been scrolled left/right
         self.world_shift = 0
+
+    def load_music(self, song):    
+        pygame.mixer.music.load(song) #the name of the music file in here
+        pygame.mixer.music.set_endevent(pygame.constants.USEREVENT)
+        pygame.mixer.music.play()
  
     # Update everythign on this level
     def update(self):
@@ -213,16 +266,19 @@ class Level():
         self.platform_list.update()
         self.enemy_list.update()
  
-    def draw(self, screen):
+    def draw(self, screen, X2, curr_background = background): #---------------------------------------------------------------------------------------------------------------------------------------------------
         """ Draw everything on this level. """
  
         # Draw the background
         screen.fill(BLUE)
+
+        X2 += 1
+        screen.blit(curr_background,(X2,0))
  
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)
-        self.enemy_list.draw(screen)
- 
+        self.enemy_list.draw(screen)                 
+
     def shift_world(self, shift_x):
         """ When the user moves left/right and we need to scroll
         everything: """
@@ -236,11 +292,42 @@ class Level():
  
         for enemy in self.enemy_list:
             enemy.rect.x += shift_x
- 
- 
-# Create platforms for the level
+ # Create platforms for the level
 class Level_01(Level):
     """ Definition for level 1. """
+ 
+    def __init__(self, player):
+        """ Create level 1. """
+        background = pygame.transform.scale(pygame.image.load("3_game_background.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+        screen.blit(background, (0,0))
+ 
+        # Call the parent constructor
+        Level.__init__(self, player)
+ 
+        self.level_limit = -1000
+
+        song = "Purple Planet Music - Tense - Stalking the Prey (1_20) 92bpm.mp3"
+        self.load_music(song)
+ 
+        # Array with width, height, x, and y of platform
+        level = [[210, 70, 500, 500],
+                 [210, 70, 800, 400],
+                 [210, 70, 1000, 500],
+                 [210, 70, 1120, 280],
+                 ]
+ 
+        # Go through the array above and add platforms
+        for platform in level:
+            block = Platform(platform[0], platform[1])
+            block.rect.x = platform[2]
+            block.rect.y = platform[3]
+            block.player = self.player
+            self.platform_list.add(block)
+
+
+ # Create platforms for the level
+class Level_02(Level):
+    """ Definition for level 2. """
  
     def __init__(self, player):
         """ Create level 1. """
@@ -249,6 +336,31 @@ class Level_01(Level):
         Level.__init__(self, player)
  
         self.level_limit = -1000
+ 
+        # Array with type of platform, and x, y location of the platform.
+        level = [[210, 30, 450, 570],
+                 [210, 30, 850, 420],
+                 [210, 30, 1000, 520],
+                 [210, 30, 1120, 280]]
+ 
+        # Go through the array above and add platforms
+        for platform in level:
+            block = Platform(platform[0], platform[1])
+            block.rect.x = platform[2]
+            block.rect.y = platform[3]
+            block.player = self.player
+            self.platform_list.add(block)
+ 
+# Create platforms for the level
+class Level_03(Level):
+     def __init__(self, player):
+
+        # Call the parent constructor
+        Level.__init__(self, player)
+ 
+        self.level_limit = -1000
+        self.X2 = 0
+
  
         # Array with width, height, x, and y of platform
         level = [[210, 70, 500, 500],
@@ -265,24 +377,25 @@ class Level_01(Level):
             block.player = self.player
             self.platform_list.add(block)
  
- 
+
 # Create platforms for the level
-class Level_02(Level):
+class Level_04(Level):
     """ Definition for level 2. """
  
     def __init__(self, player):
         """ Create level 1. """
- 
+
         # Call the parent constructor
         Level.__init__(self, player)
+
  
         self.level_limit = -1000
  
         # Array with type of platform, and x, y location of the platform.
         level = [[210, 30, 450, 570],
-                 [210, 30, 850, 420],
-                 [210, 30, 1000, 520],
-                 [210, 30, 1120, 280],
+                 [210, 30, 650, 420],
+                 [210, 30, 700, 520],
+                 [210, 30, 1120, 580],
                  ]
  
         # Go through the array above and add platforms
@@ -292,16 +405,38 @@ class Level_02(Level):
             block.rect.y = platform[3]
             block.player = self.player
             self.platform_list.add(block)
+
+
+# Create platforms for the level
+class Level_05(Level):
+    """ Definition for level 2. """
+ 
+    def __init__(self, player):
+        """ Create level 1. """
+
+        # Call the parent constructor
+        Level.__init__(self, player)
+
+ 
+        self.level_limit = -1000
+
+        # Array with width, height, x, and y of platform
+        level = [[210, 70, 500, 500],
+                 [210, 70, 800, 400],
+                 [210, 70, 1200, 500],
+                 [210, 70, 1320, 580],
+                 ]
  
  
+        # Go through the array above and add platforms
+        for platform in level:
+            block = Platform(platform[0], platform[1])
+            block.rect.x = platform[2]
+            block.rect.y = platform[3]
+            block.player = self.player
+            self.platform_list.add(block)  
+
 def main():
-    """ Main Program """
-    pygame.init()
- 
-    # Set the height and width of the screen
-    size = [SCREEN_WIDTH, SCREEN_HEIGHT]
-    screen = pygame.display.set_mode(size)
- 
     pygame.display.set_caption("Side-scrolling Platformer")
  
     # Create the player
@@ -311,6 +446,9 @@ def main():
     level_list = []
     level_list.append(Level_01(player))
     level_list.append(Level_02(player))
+    level_list.append(Level_03(player))
+    level_list.append(Level_04(player))
+    level_list.append(Level_05(player))
  
     # Set the current level
     current_level_no = 0
@@ -328,32 +466,49 @@ def main():
  
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
+
  
     # -------- Main Program Loop -----------
+    walkCount = 0
+    idleCount = 0
+    jumpCount = 10
+
+    right = True
+    left = False
+    idle = True
+    jump = False
+
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
+
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT]:
+           player.go_left(X2)
+        elif keys[pygame.K_RIGHT]:
+           player.go_right(X2)
+        elif keys[pygame.K_SPACE]:
+           player.doJump()
+        else:
+            player.stop()
  
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.go_left()
-                if event.key == pygame.K_RIGHT:
-                    player.go_right()
-                if event.key == pygame.K_SPACE:
-                    player.jump()
- 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT and player.change_x < 0:
-                    player.stop()
-                if event.key == pygame.K_RIGHT and player.change_x > 0:
-                    player.stop()
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT and player.change_x < 0:
+                idle = True
+                player.stop()
+            if event.key == pygame.K_RIGHT and player.change_x > 0:
+                player.idle = True
+                player.stop()
  
         # Update the player.
         active_sprite_list.update()
  
         # Update items in the level
         current_level.update()
+
+        #player.drawMainCharacter();
  
         # If the player gets near the right side, shift the world left (-x)
         if player.rect.right >= 500:
@@ -377,7 +532,7 @@ def main():
                 player.level = current_level
  
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-        current_level.draw(screen)
+        current_level.draw(screen, X2)
         active_sprite_list.draw(screen)
  
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
@@ -386,7 +541,7 @@ def main():
         clock.tick(60)
  
         # Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
+        pygame.display.update()
  
     # Be IDLE friendly. If you forget this line, the program will 'hang'
     # on exit.
