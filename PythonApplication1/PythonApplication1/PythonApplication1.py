@@ -1,4 +1,5 @@
 import pygame
+import random
 
 """ Main Program """
 pygame.init()
@@ -10,6 +11,7 @@ SCREEN_HEIGHT = 600
 # Set the height and width of the screen
 size = [SCREEN_WIDTH, SCREEN_HEIGHT]
 screen = pygame.display.set_mode(size)
+snowColor = (169,169,169)
  
 # Global constants
 global idleCount
@@ -23,7 +25,7 @@ global X2
 global background
 X2 = 0
 
-background = pygame.transform.scale(pygame.image.load("3_game_background.png"), (SCREEN_WIDTH*6, SCREEN_HEIGHT))
+background = pygame.transform.scale(pygame.image.load("3_game_background.png"), (SCREEN_WIDTH*2, SCREEN_HEIGHT))
 
 # Colors
 BLACK = (0, 0, 0)
@@ -119,22 +121,25 @@ class Player(pygame.sprite.Sprite):
         """ Move the player. """
         self.index += 1
         
-        if self.right:
-            if self.index >= len(self.runRight):
-                self.index = 0
-            self.image = self.runRight[self.index]
-        elif self.left:
-            if self.index > len(self.runLeft):
-                self.index = 0
-            self.image = self.runLeft[self.index]
-        elif self.jump:
-            if self.index >= len(self.jumpy):
-                self.index = 0
-            self.image = self.jumpy[self.index]
-        else:
-            if self.index >= len(self.idling):
-                self.index = 0
-            self.image = self.idling[self.index]
+        try:
+            if self.right:
+                if self.index >= len(self.runRight):
+                    self.index = 0
+                self.image = self.runRight[self.index]
+            elif self.left:
+                if self.index > len(self.runLeft):
+                    self.index = 0
+                self.image = self.runLeft[self.index]
+            elif self.jump:
+                if self.index >= len(self.jumpy):
+                    self.index = 0
+                self.image = self.jumpy[self.index]
+            else:
+                if self.index >= len(self.idling):
+                    self.index = 0
+                self.image = self.idling[self.index]
+        except:
+            self.update()
 
         # Gravity
         self.calc_grav()
@@ -188,6 +193,7 @@ class Player(pygame.sprite.Sprite):
         # Move down 2 pixels because it doesn't work well if we only move down 1
         # when working with a platform moving down.
         # Sound Effect when jumping, in jump definition of player class
+        self.jump = True
         jump_sound = pygame.mixer.Sound("Jump_Sound.wav")
         pygame.mixer.Sound.play(jump_sound)
 
@@ -438,7 +444,7 @@ class Level_05(Level):
 
 def main():
     pygame.display.set_caption("Side-scrolling Platformer")
- 
+
     # Create the player
     player = Player()
  
@@ -489,10 +495,20 @@ def main():
            player.go_left(X2)
         elif keys[pygame.K_RIGHT]:
            player.go_right(X2)
-        elif keys[pygame.K_SPACE]:
-           player.doJump()
         else:
             player.stop()
+
+        if not player.jump:
+            if keys[pygame.K_SPACE]:
+                player.doJump()
+                player.walkCount = 0
+        else:
+            if player.jumpCount >= -10:
+                if player.jumpCount <0:
+                    player.doJump()
+            else:
+                player.jump = False
+                player.jumpCount = 10
  
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT and player.change_x < 0:
@@ -508,7 +524,6 @@ def main():
         # Update items in the level
         current_level.update()
 
-        #player.drawMainCharacter();
  
         # If the player gets near the right side, shift the world left (-x)
         if player.rect.right >= 500:
