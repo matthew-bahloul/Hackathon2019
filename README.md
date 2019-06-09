@@ -8,3 +8,7 @@ HSU hackathon 2019 - A python based game
 
 <h2>Jump around until you get to the final fight</h2>
 <img src="img/pumpkin-game-2.png">
+
+<h2>Find the final boss and kill him<h2>
+ <img src="img/boss-fight.png">
+ 
